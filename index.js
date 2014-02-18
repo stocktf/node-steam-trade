@@ -266,10 +266,10 @@ SteamTrade.prototype.loadInventory = function(appid, contextid, callback) {
       callback();
       return;
     }
-    // Invalid backpack requested
+    // This can be caused by a Steam error or an invalid backpack being called.
     if ( body.hasOwnProperty('success') && !body.success ) {
 
-      throw 'Invalid backpack requested.';
+      throw 'Error loading inventory.';
 
     }
     // Error loading inventory, GC may be down
