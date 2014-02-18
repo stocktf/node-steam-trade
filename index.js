@@ -259,7 +259,6 @@ SteamTrade.prototype.loadInventory = function(appid, contextid, callback) {
     if (error || response.statusCode != 200) {
       this.emit('debug', 'loading my inventory: ' + (error || response.statusCode != 200 ? response.statusCode : '{}'));
       this.loadInventory(appid, contextid, callback);
-      console.log(body);
       return;
     }
     if (typeof body != 'object') {
