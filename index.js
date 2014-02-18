@@ -256,9 +256,10 @@ SteamTrade.prototype.loadInventory = function(appid, contextid, callback) {
     uri: 'http://steamcommunity.com/my/inventory/json/' + appid + '/' + contextid,
     json: true
   }, function(error, response, body) {
-    if (error || response.statusCode != 200 || JSON.stringify(body) == '{}') { // the latter happens when GC is down
+    if (error || response.statusCode != 200) {
       this.emit('debug', 'loading my inventory: ' + (error || response.statusCode != 200 ? response.statusCode : '{}'));
       this.loadInventory(appid, contextid, callback);
+      console.log(body);
       return;
     }
     if (typeof body != 'object') {
@@ -266,6 +267,18 @@ SteamTrade.prototype.loadInventory = function(appid, contextid, callback) {
       callback();
       return;
     }
+    // Invalid backpack requested
+    if ( body.hasOwnProperty('success') && !body.success ) {
+
+      throw 'Invalid backpack requested.';
+
+    }
+    // Error loading inventory, GC may be down
+    if (!body.rgInventory || !body.rgCurrency) {
+
+      return callback();
+
+     }
     callback(mergeWithDescriptions(body.rgInventory, body.rgDescriptions, contextid)
       .concat(mergeWithDescriptions(body.rgCurrency, body.rgDescriptions, contextid)));
   }.bind(this));
